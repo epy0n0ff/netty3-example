@@ -24,7 +24,6 @@ public class ServerHandler extends SimpleChannelHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.info("exceptionCaught");
         super.exceptionCaught(ctx, e);
-        e.getChannel().close();
     }
 
     @Override
