@@ -16,30 +16,29 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 
 public class Main {
-    public static void main(String[] args) {
-        ChannelFactory factory =
-                new NioServerSocketChannelFactory(
-                        Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
+  public static void main(String[] args) {
+    ChannelFactory factory =
+        new NioServerSocketChannelFactory(
+            Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
 
-        ServerBootstrap bootstrap = new ServerBootstrap(factory);
-        bootstrap.setPipelineFactory(
-                () -> {
-                    ChannelPipeline pipeline = Channels.pipeline();
-                    pipeline.addLast("httpRequestDecoder", new HttpDecoder());
-                    pipeline.addLast("UpstreamHandler", new UpstreamHandler());
-                    pipeline.addLast("httpResponseEncoder", new HttpEncoder());
-                    pipeline.addLast("DownstreamHandler", new DownstreamHandler());
-                    pipeline.addLast(
-                            "executionHandler",
-                            new ExecutionHandler(
-                                    new OrderedMemoryAwareThreadPoolExecutor(8, 1048576, 1048576)));
-                    pipeline.addLast("serverHandler", new ServerHandler());
+    ServerBootstrap bootstrap = new ServerBootstrap(factory);
+    bootstrap.setPipelineFactory(
+        () -> {
+          ChannelPipeline pipeline = Channels.pipeline();
+          pipeline.addLast("httpRequestDecoder", new HttpDecoder());
+          pipeline.addLast("UpstreamHandler", new UpstreamHandler());
+          pipeline.addLast("httpResponseEncoder", new HttpEncoder());
+          pipeline.addLast("DownstreamHandler", new DownstreamHandler());
+          pipeline.addLast(
+              "executionHandler",
+              new ExecutionHandler(new OrderedMemoryAwareThreadPoolExecutor(8, 1048576, 1048576)));
+          pipeline.addLast("serverHandler", new ServerHandler());
 
-                    return pipeline;
-                });
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", true);
-        bootstrap.setOption("reuseAddress", true);
-        bootstrap.bind(new InetSocketAddress(8020));
-    }
+          return pipeline;
+        });
+    bootstrap.setOption("child.tcpNoDelay", true);
+    bootstrap.setOption("child.keepAlive", true);
+    bootstrap.setOption("reuseAddress", true);
+    bootstrap.bind(new InetSocketAddress(8020));
+  }
 }
