@@ -13,6 +13,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,14 @@ public class ServerHandler extends SimpleChannelHandler {
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
     logger.info("exceptionCaught");
-    super.exceptionCaught(ctx, e);
+
+    byte[] body = "ServerHandler.exceptionCaught".getBytes();
+    HttpResponse response =
+        new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+    response.headers().set(CONTENT_TYPE, "text/plain");
+    HttpHeaders.setContentLength(response, body.length);
+    ctx.getChannel().write(response);
+    ctx.getChannel().write(ChannelBuffers.wrappedBuffer(body));
   }
 
   @Override

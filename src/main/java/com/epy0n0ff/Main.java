@@ -39,6 +39,6 @@ public class Main {
     bootstrap.setOption("child.tcpNoDelay", true);
     bootstrap.setOption("child.keepAlive", true);
     bootstrap.setOption("reuseAddress", true);
-    bootstrap.bind(new InetSocketAddress(8020));
+    bootstrap.bind(new InetSocketAddress(8889));
   }
 }
